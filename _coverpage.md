@@ -1,10 +1,10 @@
 
-# 旦願的博客
+# ⌨codertzm
 
-> 保持热爱 奔赴山海
+> life's too short to waste a second
 
-- 前端开发者
-- 普通程序员
+- ordinary people
+- frontend web developer
 
 [GitHub](https://github.com/Twitzz)
-[开始阅读](./README.md)
+[getStart](./README.md)
