@@ -1,8 +1,8 @@
 ## call 与 apply 共同点
 
-* 都能够改变函数执行时的上下文，将一个对象的方法交给另一个对象来执行，并且是立即执行的
+* 都能够改变函数执行时的this指向，将一个对象的方法交给另一个对象来执行，并且是立即执行的
 * 比如，A 对象有一个方法，而 B 对象因为某种原因，也需要用到同样的方法，那么这时候我们可以借用一下 A 对象的方法，既完成了需求，又减少了内存的占用。
-* 调用 call 和 apply 的对象，必须是一个函数 Function
+* 调用 call 和 apply 的对象，必须是一个函数 Function，因为call和apply方法存在于Function.prototype上
 * call 和 apply 的第一个参数是一个对象。Function 的调用者，将会指向这个对象，如果不传，默认情况下是window
 
 ## call 与 apply 的区别
@@ -43,8 +43,6 @@ fn.apply(obj, {
 
 ## call 与 apply的使用
 
-### call 的使用
-
 1. 对象的继承
 
 ```js
@@ -67,33 +65,35 @@ function Cat(name,color){
 let args = Array.prototype.slice.call(arguments);
 ```
 
-> 将 arguments 对象转换成数组
+>  这里将arguments 对象转换成数组，其他将arguments转换为数组的方法可以在这里找到：[类数组](frontend/JavaScript/arrayLike.md)
 
-### apply的使用
+因为Array.prototype上的slice方法，其实内部大概做了这样的事情，因此将其中的this指向arguments能够实现数组的转换
 
-1. 获取数组最大最小值
+```js
+Array.prototype.slice = function(start,end){
+    // 没有考虑边界情况，只考虑实现思路
+    var arr = this
+    var newArr = []
+    for (var i = start; i < end; i++ ){
+        newArr.push(arr[i])
+    }
+    return newArr
+}
+```
+
+3. 获取数组最大最小值
 
 ```js
 let max = Math.max.call(null,arr);
 let min = Math.min.call(null,arr);
 ```
 
-2. ES5 前实现数组合并
-
-```js
-let arr1 = [1,2,3];
-let arr2 = [4,5,6];
-Array.prototype.push(arr1,arr2);
-```
-
-> ES6后可以使用 spread 运算符实现数组合并
-
 ## bind 的使用
 
 ### bind 的写法
 
 ```js
-Function.bind(thisArg[, arg1[, arg2[, ...]]])
+Function.bind(thisArg,[, arg1[, arg2[, ...]]])
 ```
 
 bind 方法的返回值是函数，需要调用才会执行，而 call 和 apply 是立即调用
@@ -107,8 +107,88 @@ add.bind(null, 5, 3); // 这时，并不会返回 8
 add.bind(null, 5, 3)(); // 调用后，返回 8
 ```
 
+> 注意：bind方法可以在绑定的时候传递函数的参数，也可以在函数调用的时候，将剩余的参数传递过去
+
+## 手动实现call、apply、bind
+
+> 这里主要提供实现思路，没有做过多的边界处理
+
+### call方法
+
+```js
+Function.prototype.mycall = function(thisArg,...argArray) {
+  // this是调用call方法的函数
+  var fn = this
+  // 判断传参是否是null、undefined
+  thisArg = (thisArg !== undefined && thisArg !== null) ? thisArg : window
+  // 将基本类型的数据转换为对象
+  thisArg = Object(thisArg)
+  // this的隐式绑定
+  thisArg.fn = fn
+  // 拿到函数的返回值
+  var result = thisArg.fn(...argArray)
+  // 删除属性
+  delete thisArg.fn
+
+  return result
+}
+```
+
+### apply方法
+
+```js
+Function.prototype.myapply = function(thisArg,argArray) {
+  // this是调用apply方法的函数
+  var fn = this
+  // 判断传参是否是null、undefined
+  thisArg = (thisArg !== undefined && thisArg !== null) ? thisArg : window
+  // 判断argArray是否是数组
+  if(!(argArray instanceof Array)){
+    throw new Error("CreateListFromArrayLike called on non-object")
+  }
+  // 将基本类型的数据转换为对象
+  thisArg = Object(thisArg)
+  // this的隐式绑定
+  thisArg.fn = fn
+  // 拿到函数的返回值
+  var result = thisArg.fn(...argArray)
+  // 删除属性
+  delete thisArg.fn
+
+  return result
+}
+```
+
+### bind方法
+
+```js
+Function.prototype.mybind = function (thisArg, ...argArray) {
+  // this是调用call方法的函数
+  var fn = this
+  // 判断传参是否是null、undefined
+  thisArg = thisArg !== undefined && thisArg !== null ? thisArg : window
+  // 将基本类型的数据转换为对象
+  thisArg = Object(thisArg)
+  // 代理方法
+  function proxyFn(...restArgArray) {
+    thisArg.fn = fn
+    // 将所有传递的参数收集起来
+    var finalArr = [...argArray, ...restArgArray]
+    // 得到返回值
+    var result = thisArg.fn(...finalArr)
+    // 删除不需要的fn属性
+    delete thisArg.fn
+    return result
+  }
+
+  return proxyFn
+}
+```
+
+
+
 ## 总结
 
-call 和 apply 的主要作用，是改变对象的执行上下文，并且是立即执行的。它们在参数上的写法略有区别。
+call 和 apply 的主要作用，是改变函数内部的this指向，并且是立即执行的。它们在参数上的写法略有区别。
 
-bind 也能改变对象的执行上下文，它与 call 和 apply 不同的是，返回值是一个函数，并且需要稍后再调用一下，才会执行。
+bind 也能改变函数内部的this指向，它与 call 和 apply 不同的是，返回值是一个函数，并且需要稍后再调用一下，才会执行。
