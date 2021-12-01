@@ -4,10 +4,10 @@
     * [闭包](frontend/JavaScript/closure.md)
     * [this指向](frontend/JavaScript/this.md)
     * [call、apply、bind](frontend/JavaScript/call-apply-bind)
+    * [函数式编程](frontend/JavaScript/functionalProgramming.md)
     * [Promise](frontend/JavaScript/Promise.md)
     * [防抖](frontend/JavaScript/debounce.md)
     * [节流](frontend/JavaScript/throttle.md)
     * [事件循环](frontend/JavaScript/eventLoop.md)
-    * [函数柯里化](frontend/JavaScript/curry.md)
     * [类数组](frontend/JavaScript/arrayLike.md)
       <!-- * [计算机网络](frontend/network) -->
