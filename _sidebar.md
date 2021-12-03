@@ -5,6 +5,7 @@
     * [this指向](frontend/JavaScript/this.md)
     * [call、apply、bind](frontend/JavaScript/call-apply-bind)
     * [函数式编程](frontend/JavaScript/functionalProgramming.md)
+    * [面向对象](frontend/JavaScript/oop.md)
     * [Promise](frontend/JavaScript/Promise.md)
     * [防抖](frontend/JavaScript/debounce.md)
     * [节流](frontend/JavaScript/throttle.md)
