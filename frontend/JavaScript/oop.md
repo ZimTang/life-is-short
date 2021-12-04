@@ -208,10 +208,6 @@ Object.defineProperties(obj, {
 console.log(Object.keys(obj)) // ['name']
 ```
 
-## 其他对象方法
-
-
-
 ## 创建对象的几种方案
 
 在本文开始我们提到两种创建对象的方式，但其实还有很多种创建对象的方式，比如：**工厂模式**。我们来看看工厂模式创建对象的方法。
@@ -300,7 +296,7 @@ console.log(p1);
 1. 通过对象的` __proto__ `属性可以获取到，（早期浏览器添加的，存在一定兼容性问题）。
 2. 通过`Object.getPrototypeOf()`方法可以获取到。
 
-> 注意：所有的函数都有一个prototype属性，是因为它是一个函数才有这个属性，而不是它是一个对象才有这个属性。
+> 注意：prototype属性时函数独有的
 
 ```js
 var obj = {}
@@ -457,7 +453,7 @@ console.log(s2.friends) // [ 'kobe', 'green' ]
 
 ### 借用构造函数继承
 
-为了解决原型链继承中存在的问题，开发人员提供了一种新的技术: **借用构造函数（constructor stealing）**
+为了解决原型链继承中存在的问题，开发人员提供了一种新的技术: **借用构造函数（constructor stealing）**，也称之为组合继承。
 
 这种继承方式很简单：在子类型构造函数中的内部**调用了父类的构造函数**。
 
@@ -476,6 +472,7 @@ function Student(name, age,friends) {
   this.age = age
 }
 
+// 该对象上会多出来friends属性，并且它的值是undefined
 var p = new Person()
 Student.prototype = p
 
@@ -498,3 +495,135 @@ console.log(s2.friends) // [ 'bosh', 'howard', 'green' ]
 
 1. `Person`函数被调用了两次。
 2. `s1`的原型对象会多出来一些属性（比如`friends`属性），但是这些属性没有存在的必要。
+
+
+
+### 寄生式继承
+
+在说寄生式继承前，我们先来看看原型式继承函数。
+
+这种模式要从道格拉斯·克罗克福德（Douglas Crockford，著名的前端大师，JSON的创立者）在2006年写的一篇文章说起: Prototypal Inheritance in JavaScript(在JS中使用原型式继承)。
+
+```js
+// 原型式继承函数
+function createObject(o){
+  function F(){}
+  // 将它的原型对象指向改变
+  F.prototype = o
+  var newObj = new F()
+  // 返回的对象(newObj)可以通过__proto__属性访问到对象o
+  return newObj
+}
+```
+
+> ES6提供了`Object.create()`方法来实现原型式继承函数的作用
+
+寄生式继承就是将原型式继承函数和工厂模式结合起来的一种继承方式。
+
+它的原理是：创建一个封装继承过程的函数, 该函数在内部以某种方式来增强对象，最后再将这个对象返回。
+
+```js
+function createStudent(person){
+  var stu = Object.create(person)
+  stu.studying = function(){
+    console.log("studying")
+  }
+}
+```
+
+因为它使用了工厂模式，所以仍然是存在弊端工厂模式的弊端的。
+
+### 最终解决方案-寄生组合式继承
+
+其实从名字就可以看出，这是将寄生式继承和组合式继承（借用构造函数）结合起来的一种继承方式。
+
+我们提到过：组合式继承（借用构造函数）存在两个问题：1. 父类构造函数被调用两次；2. 实例化的子类的原型对象是会多出来一些无用的属性。
+
+然而通过这种最终解决方案，这些问题都能被解决。直接看代码：
+
+```js
+// 继承的工具函数 subType-子类，SuperType-父类
+function inheritPrototype(SubType, SuperType) {
+  SubType.prototype = Object.create(SuperType.prototype)
+  // contructor指回原来的构造函数
+  Object.defineProperty(SubType.prototype, "constructor", {
+    enumerable: false,
+    configurable: true,
+    writable: true,
+    value: SubType
+  })
+}
+
+// 父类Person
+function Person(name, age, friends) {
+  this.name = name
+  this.age = age
+  this.friends = friends
+}
+
+// 给原型上添加方法
+Person.prototype.running = function() {
+  console.log("running~")
+}
+
+// 给原型上添加方法
+Person.prototype.eating = function() {
+  console.log("eating~")
+}
+
+// 子类Student
+function Student(name, age, friends, sno, score) {
+  // 借用父类的构造函数，但是只调用了一次父类的构造函数，解决了组合继承的问题
+  Person.call(this, name, age, friends)
+  this.sno = sno
+  this.score = score
+}
+
+// 给原型上添加方法
+Student.prototype.studying = function() {
+  console.log("studying~")
+}
+
+// Student继承Person
+inheritPrototype(Student, Person)
+
+// 实例化子类
+var stu = new Student("why", 18, ["kobe"], 111, 100)
+
+stu.studying() // studying~
+stu.running() // running~
+stu.eating() // eating~
+
+console.log(stu.constructor.name) // Student
+```
+
+##  __ proto __、prototype、constructor
+
+说完继承后，我们最后来完全弄懂这三个属性。
+
+![](https://codertzm.oss-cn-chengdu.aliyuncs.com/20190311194017886.png)
+
+直接看这张图很容易晕，我们一步步来分解。
+
+### __ proto __
+
+我们来看看`__ proto __ `属性，先只看上图红色的那条线，并且需要牢记两点：
+
+1. `__proto__`和`constructor`属性是**对象**所独有的。
+2.  `prototype`属性是**函数**所独有的。但是由于JS中函数也是一种对象，所以函数也拥有`__proto__`和`constructor`属性。
+
+### prototype
+
+接着我们来看看`prototype`属性（绿色的那条线），它是**函数所独有的**，它是从**一个函数指向一个对象**。它的含义是**函数的原型对象**，也就是这个函数（其实所有函数都可以作为构造函数）所创建的实例的原型对象。**任何函数在创建的时候，其实会默认同时创建该函数的prototype对象。**
+
+### constructor
+
+最后我们再来看`constructor`属性，它也是**对象才拥有的**，它是从**一个对象指向一个函数**，含义就是**指向该对象的构造函数**。
+
+可以看出**Function**这个对象比较特殊，**它的构造函数就是它自己**（因为Function可以看成是一个函数，函数也是一个对象），所有函数和对象最终都是由Function构造函数得来，所以`constructor`属性的终点就是**Function**这个函数。
+
+## 总结
+
+本文涉及的知识点较多，关于ES6中的`class`关键字我们这里不提及是因为它不过是一种语法糖而已。
+
+同时只有真正掌握了JavaScript中的原型和面向对象的概念才能真正理解，JavaScript中的继承是如何来实现的。
