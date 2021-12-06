@@ -1,3 +1,5 @@
+# 函数式编程
+
 在JavaScript中，函数是第一公民，因此JavaScript符合函数式编程（Functional Programming）的范式，在函数式编程中，有很多概念，我们先从纯函数说起。
 
 ## 纯函数（pure function）
