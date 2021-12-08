@@ -722,7 +722,7 @@ const s5 = Symbol.for('abc')
 console.log(s4 === s5) // true
 ```
 
-也可以使用 `Symbol.keyFor()` 这个函数来得到 `Symbol` 的 描述
+也可以使用 `Symbol.keyFor()` 这个函数来得到 `Symbol` 的 描述。
 
 ```js
 const s4 = Symbol.for('abc')
@@ -731,4 +731,151 @@ const key = Symbol.keyFor(s5) // 'abc'
 const s6 = Symbol.for(key)
 console.log(s4 === s5) // true
 console.log(s4 === s6) // true
+```
+
+## Set
+
+在ES6之前，我们存储数据的结构主要有两种：数组和对象，
+
+ES6新增了两种数据结构：`Set` 、 `Map` 以及它们的另外的形式 `WeakSet` 、 `WeakMap` 。
+
+`Set` 用来保存数据，类似于数组，但是和数组的区别是 **元素不能重复** 。
+
+### 创建Set
+
+```js
+// 创建Set
+const set = new Set()
+set.add(1)
+set.add(2)
+set.add(1)
+console.log(set) // Set(2) { 1, 2 }
+```
+
+### 数组去重
+
+在没有 `Set` 之前，如果需要进行数组去重，我们需要写出这样的代码：
+
+```js
+const arr = [1, 2, 1, 4]
+
+const newArr = []
+for (var i = 0; i < arr.length; i++) {
+  if (newArr.indexOf(arr[i]) === -1) {
+    newArr.push(arr[i])
+  }
+}
+console.log(newArr)
+```
+
+在有了 `Set` 之后，我们可以这样实现：
+
+```js
+const arr = [1, 2, 1, 4]
+const newArr = [...(new Set(arr))]
+
+console.log(newArr) // [ 1, 2, 4 ]
+```
+
+看起来简洁了很多。
+
+### Set常见的属性和方法
+
+#### 常见属性
+
+* `size`：返回 `Set` 中元素的个数。
+
+#### 常见方法
+
+* `add(value)`：添加某个元素，返回 `Set` 对象本身。
+* `delete(value)`：从 `Set` 中删除和这个值相等的元素，返回 `boolean` 类型。
+* `has(value)`：判断 `set` 中是否存在某个元素，返回 `boolean`  类型。
+* `clear()`：清空 `Set` 中所有的元素，没有返回值。
+* `forEach(callback, [, thisArg])`：通过 `forEach` 遍历 `Set` 。
+* Set也支持 `for of` 遍历。
+
+## WeakSet
+
+和 `Set` 类似的另外一个数据结构称之为 `WeakSet` ，也是内部元素不能重复的数据结构。
+
+### WeakSet和Set的区别
+
+1. `WeakSet` 中只能存放对象类型，不能存放基本数据类型。
+2. `WeakSet` **对元素的引用是弱引用**（后面会说什么是弱引用），如果没有其他引用对某个对象进行引用，那么 `GC（垃圾回收器）` 可以对该对象进行回收。
+
+常见方法：
+
+1. `add(value)`：添加某个元素，返回 `WeakSet` 对象本身。
+
+2. `delete(value)`：从 `WeakSet` 中删除和这个值相等的元素，返回 `boolean` 类型。
+
+3. `has(value)`：判断 `WeakSet` 中是否存在某个元素，返回 `boolean` 类型。
+
+### WeakSet中对元素的引用是弱引用
+
+我们上面提到，`WeakSet` 对元素的引用是弱引用，那么什么是弱引用呢？通过一个例子我们来认识一下：
+
+如果我们使用 `Set` 来存放对象类型，那么它在内存表现是这样的**（红色的线代表强引用）**：
+
+```js
+const obj = {
+  name: 'curry',
+  age: 33
+}
+
+const set = new Set()
+set.add(obj)
+```
+
+![image-20211208230549399](https://codertzm.oss-cn-chengdu.aliyuncs.com/image-20211208230549399.png)
+
+而使用 `WeakSet` 来存放对象类型的数据，它的内存表现是这样的**（红色的线代表强引用，黄色的线代表弱引用）**：
+
+```js
+const obj = {
+  name: 'curry',
+  age: 33
+}
+
+const wset = new WeakSet()
+wset.add(obj)
+```
+
+![image-20211208230722876](https://codertzm.oss-cn-chengdu.aliyuncs.com/image-20211208230722876.png)
+
+我们上面介绍了：
+
+> `WeakSet` **对元素的引用是弱引用**，如果没有其他引用对某个对象进行引用，那么 `GC（垃圾回收器）` 可以对该对象进行回收。
+
+**这也就意味着：**
+
+如果我们使用 `Set` 存放对象类型，当我们将 `obj` 赋值为 `null` ，虽然 `obj` 不再指向 `0xa00` 这个内存空间，但是 `set变量` 中的一个元素仍然保存着 `0xa00` 的引用（由于它是强引用），因此，`0xa00` 这块内存空间仍然不会被 `GC` 回收。
+
+如果我们使用 `WeakSet` 存放对象类型，当我们将 `obj` 赋值为 `null` ， `obj` 不再指向 `0xa00` 这个内存空间。并且，由于 `WeakSet` 保存的元素的引用是弱引用，因此，`WeakSet` 不再保存对这块内存空间的引用， ` 0xa00` 这块内存空间将会被 `GC` 回收。
+
+### WeakSet的应用场景
+
+事实上，`WeakSet` 的应用场景并不多。
+
+如果我们需要判断一个对象是否是通过自己的实例来调用该对象内部的方法，我们可以使用 `WeakSet` ：
+
+```js
+const pwset = new WeakSet()
+class Person {
+  constructor() {
+    pwset.add(this)
+  }
+
+  running() {
+    if (!pwset.has(this)) {
+      throw new Error('不能通过其他对象调用running方法')
+    }
+    console.log('running')
+  }
+}
+
+const p = new Person()
+
+p.running() // running
+p.running.call({ name: 'curry' }) // error
 ```
