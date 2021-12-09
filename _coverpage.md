@@ -1,7 +1,7 @@
 
 # ⌨旦願
 
-> life's too short to waste a second
+> 保持热爱，奔赴山海
 
 - ordinary people
 - frontend web developer

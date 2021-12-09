@@ -851,7 +851,7 @@ wset.add(obj)
 
 如果我们使用 `Set` 存放对象类型，当我们将 `obj` 赋值为 `null` ，虽然 `obj` 不再指向 `0xa00` 这个内存空间，但是 `set变量` 中的一个元素仍然保存着 `0xa00` 的引用（由于它是强引用），因此，`0xa00` 这块内存空间仍然不会被 `GC` 回收。
 
-如果我们使用 `WeakSet` 存放对象类型，当我们将 `obj` 赋值为 `null` ， `obj` 不再指向 `0xa00` 这个内存空间。并且，由于 `WeakSet` 保存的元素的引用是弱引用，因此，`WeakSet` 不再保存对这块内存空间的引用， ` 0xa00` 这块内存空间将会被 `GC` 回收。
+如果我们使用 `WeakSet` 存放对象类型，当我们将 `obj` 赋值为 `null` ， `obj` 不再指向 `0xa00` 这个内存空间。并且，由于 `WeakSet` 保存的元素的引用是弱引用，因此，`WeakSet` 不再保存对这块内存空间的引用， `0xa00` 这块内存空间将会被 `GC` 回收。
 
 ### WeakSet的应用场景
 
@@ -879,3 +879,108 @@ const p = new Person()
 p.running() // running
 p.running.call({ name: 'curry' }) // error
 ```
+
+## Map
+
+另外一个新增的数据结构是 `Map` ，用于存储映射关系。
+
+### Map与普通对象的区别
+
+对于对象来说：
+
+* 存储映射关系只能用字符串（ES6新增了Symbol）作为属性名（key）。
+* 某些情况下我们可能希望通过其他类型作为key，比如对象，这个时候会自动将对象转成字符串来作为key。
+
+遇到这种情况，我们可以使用 `Map` 。
+
+### Map的常见属性和方法
+
+#### 常见属性
+
+* `size` ： 返回 `Map` 中元素的个数。
+
+#### 常见方法
+
+* `set(key,value)` ：在 `Map` 中添加 `key` 、 `value` ，并且返回整个 `Map` 对象。
+* `get(key)` ：根据 `key` 获取 `Map` 对象中的 `value` 。
+* `has(key)` ：判断是否包括某一个 `key` ，返回 `boolean` 类型。
+* `delete(key)` ：根据 `key` 删除一个键值对，返回 `boolean` 类型。
+* `clear()` ：清空所有元素
+* `forEach(callback,[,thisArg])` ：通过 `forEach` 遍历 `Map` 。
+* `Map` 也支持通过 `for of` 遍历。
+
+## WeakMap
+
+和 `Map` 类型相似的另外一个数据结构称之为 `WeakMap` ，也是以键值对的形式存在的。
+
+### WeakMap和Map的区别
+
+1. `WeakMap` 的 `key` 只能使用对象，不接受其他的类型作为 `key` 。
+2. `WeakMap` 的 `key` 对对象的引用是弱引用，如果没有其他引用引用这个对象，那么 `GC` 可以回收该对象。
+3. `WeakMap` 不能遍历，因为没有 `forEach` 方法，也不支持通过 `for of` 的方式进行遍历。
+
+### WeakMap的常见方法
+
+* `set(key, value)` ：在 `Map` 中添加 `key` 、`value` ，并且返回整个 `Map` 对象。
+* `get(key)` ：根据 `key` 获取 `Map` 中的 `value` 。
+* `has(key)` ：判断是否包括某一个 `key` ，返回 `boolean` 类型。
+* `delete(key)` ：根据 `key` 删除一个键值对，返回 `boolean` 类型。
+
+### WeakMap的应用场景
+
+在 `Vue` 的响应式原理中，其实就使用了 `WeakMap`。
+
+看下面这个例子：
+
+```js
+const obj1 = {
+  name: 'curry',
+  age: 30,
+}
+
+function objNameFn1() {
+  console.log('objNameFn1被执行了')
+}
+
+function objNameFn2() {
+  console.log('objNameFn2被执行了')
+}
+
+function obj1AgeFn1() {
+  console.log('objAgeFn1被执行了')
+}
+
+function obj1AgeFn2() {
+  console.log('objAgeFn2被执行了')
+}
+
+const weakMap = new WeakMap()
+
+const obj1Map = new Map()
+obj1Map.set('name', [objNameFn1, objNameFn2])
+obj1Map.set('age', [obj1AgeFn1, obj1AgeFn2])
+
+weakMap.set(obj,obj1Map)
+
+// obj1.name 发生了改变
+// vue 通过 proxy 和 Object.defineProperty 监听变化 
+
+// 通过 WeakMap 实现响应式变化
+
+// 获取到要变化的那个对象（obj1）中的所有属性
+const targetMap = weakMap.get(obj1)
+
+// 根据要变化的那个属性 获取到所有改变这个属性值的方法
+const nameFns = targetMap.get("name") 
+
+// 执行方法对属性进行响应式更改
+nameFns.forEach(item => item())
+```
+
+在上面这个例子中，`WeakMap` 做的事情就是保存 `obj1` 这个对象的引用，当通过 `proxy` 和 `Object.defineProperty` 监听到属性的变化，就将该对象中的属性响应式的方法获取并对其调用。 
+
+## 总结
+
+以上就是ES6中的一些知识点，其中还有不少知识点，例如：`Promise` 、 `迭代器` 等知识我们将会在另外的章节对其进行总结。
+
+ES6是JavaScript的一个更新相当大的版本，知识点较多，ES6之后的版本相对来说会少很多东西。
