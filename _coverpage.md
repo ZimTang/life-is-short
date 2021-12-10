@@ -1,10 +1,11 @@
 
 # ⌨旦願
 
-> 保持热爱，奔赴山海
+> 生活总是这样，夜晚卸下白昼，新梦卸下旧梦
 
-- ordinary people
-- frontend web developer
+- 一只程序猿
 
-[GitHub](https://github.com/Twitzz)
-[getStart](./README.md)
+- 定格与记录我的成长
+
+[我的仓库](https://github.com/Twitzz)
+[开始阅读](./README.md)
