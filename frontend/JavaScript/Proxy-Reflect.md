@@ -192,5 +192,8 @@ const obj = Reflect.construct(Person,['curry',33], Coder)
 console.log(obj.__proto__ == Coder.prototype) // true
 ```
 
+## 总结
 
+`Proxy` 与 `Reflect` 搭配实现的响应式相比以前的 `Object.defineProperty()` 来说更为强大。
 
+在 `Vue3` 中实现响应式是通过 `Proxy` 与 `Reflect` 来实现的。后面的章节中我们也会自己模拟响应式的实现。
