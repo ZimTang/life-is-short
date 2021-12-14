@@ -1,10 +1,38 @@
 # Promise
-## Promise是做什么的
 
-* Promise是异步编程的解决方案
-* 当网络请求非常复杂时，就会出现回调地狱
-<!--more-->
-## 一个例子
+在研究一个 `Promise` 之前，我们先来看看没有 `Promise` 前，存在哪些技术痛点。
+
+## 没有Promise前遇到的问题
+
+### 网络请求使用的问题
+
+在没有出现 `Promise` 前，如果我们需要发送网络请求，需要封装并且调用这样的函数：
+
+```js
+function request(url, successCallback, failureCallback) {
+  // 模拟网络请求
+  setTimeout(() => {
+    if ((url = 'curry')) {
+      // 发送成功了
+      successCallback()
+    } else {
+      // 发送失败了
+      failureCallback()
+    }
+  }, 2000)
+}
+```
+
+虽然在上面的这种解决方案中，我们确实可以获得请求后函数的结果，但是它仍然存在几个问题：
+
+1. 我们需要自己来设计回调函数、回调函数名称、回调函数使用。
+2. 对于不同的库或框架，开发出来的设计方案可能是不同的，我们只能通过看文档或者阅读文档等方式，去了解这个函数是怎么用的，这样的成本太大了。
+
+**`Promise` 其实就是一种类似于规范的东西，规范了这种解决方案。**
+
+### 回调地狱的问题
+
+在发送 `ajax` 请求时，容易出现下面这样的，回调地狱的问题：
 
 ```js
 $.ajax("url1", function (data1) {
@@ -18,58 +46,146 @@ $.ajax("url1", function (data1) {
       });
 ```
 
-* 上面这种情况，正常时不会有什么问题的
-* 但是这样的代码难看且不易维护
-* 我们更加期望的是一种更加优雅的方式来进行异步操作
-* Promise可以以一种非常优雅的方式来解决这个问题
+对于上面这种情况，正常时不会有什么问题的，但是这样的代码难看且不易维护，我们更加期望的是一种更加优雅的方式来进行异步操作。
 
-## Promise基础
+**`Promise` 可以以一种非常优雅的方式来解决这个问题。**
 
-### Promise 的状态
+## Promise是什么
 
-实例对象中的一个属性 [PromiseState]
+`Promise` 是一个类，当我们需要给予调用者一个承诺，待会我会给你回调数据时，就可以创建一个Promise的对象。
 
-* pending 未决定的
-* resolved / fulfilled 成功
-* rejected 失败
+在通过 `new` 关键字创建 `Promise` 对象时，我们需要传入一个回调函数，称之为 `executor` 。
 
-### Promise 对象的值
+对于这个 `executor` 函数来说：
 
-实例对象中的另一个属性 [PromiseResult]
-
-保存着对象【成功/失败】的结果
-
-* resolve
-* reject
-
-### Promise的API
-
-#### resolve
-
-* 如果传入的参数为 非Promise类型的对象 则返回的结果为成功的promise对象
-* 如果传入的参数为 Promise 对象，则参数的结果决定了 resolve 的结果
+* 它会立即执行，并且会接受两个参数，这两个参数是回调函数，分别称为 `resolve` 与 `reject` 。
+* 当我们调用 `resolve` 回调函数时，会执行 `Promise` 实例对象的 `then` 方法中传入的回调函数。
+* 当我们调用 `reject` 回调函数时，会执行 `Promise` 实例对象的 `catch` 方法传入的回调函数。
 
 ```js
-let p1 = Promise.resolve(111)
-let p2 = Promise.resolve(new Promise((resolve, reject) => {
-  // resolve("ok")
-  reject("error")
-}))
-console.log(p2)
+const p = new Promise((resolve, reject) => {
+  // resolve('fulfilled status')
+  // reject('rejected status')
+})
+
+p.then(res => {
+  console.log('res: ', res)
+}).catch(err => {
+  console.log('err: ', err)
+})
+
 ```
 
-#### reject
+## Promise 的状态
 
-返回的结果永远是失败的(rejected)
+`Promise` 实例对象存在三个状态：
+
+* `pending` ： 初始状态，既没有被兑现，也没有被拒绝。（当执行 `executor` 中的代码时，处于该状态）
+* `fulfilled` ：  意味着操作成功完成。（执行了 `resolve` 回调函数，处于该状态）
+* `rejected` ： 意味着操作失败。（执行了 `reject` 回调函数或抛出异常，处于该状态）
+
+> 一旦状态被确定下来，`Promise` 的状态会被**锁死**，该 `Promise` 的状态是不可更改的
+
+## 使用Promise对请求的重构
+
+有了 `Promise` 我们可以对之前网络请求的函数进行重构了。
 
 ```js
-let p = Promise.reject(111)
-let p2 = Promise.reject("123")
-let p3 = Promise.reject(new Promise((resolve, reject) => {
-  resolve("ok")
-}))
-console.log(p3)
+function reqeust(url){
+  return new Promise((resolve,reject) =>{
+    setTimeout(()=>{
+      if ((url = 'curry')) {
+        // 发送成功了
+        resolve()
+      } else {
+        // 发送失败了
+        reject()
+      }
+    },2000)
+  })
+}
 ```
+
+## resolve
+
+我们来说明一下 `resolve` 中传入的不同参数的区别：
+
+1. 如果传入的参数为 `Promise` 对象，则该 `Promise` 对象的结果决定了 `resolve` 的结果。
+
+```js
+new Promise((resolve, reject) => {
+  resolve(new Promise((resolve, reject) => {
+    resolve('fulfilled status')
+  }))
+}).then(res => {
+  console.log('res: ', res)
+})
+
+```
+
+2. 如果传入的参数为 非`Promise` 类型的对象 则返回的结果为成功的 `promise` 对象。
+
+```js
+new Promise((resolve, reject) => {
+  resolve('fulfilled status')
+}).then(res => {
+  console.log('res: ', res)
+})
+```
+
+3. 如果传入的参数为一个对象，并且这个对象有实现 `then` 方法（可以称为 `thenable` ），那么会执行该 `then` 方法，并且根据 `then` 方法的结果来决定 `Promise` 的状态。
+
+```js
+new Promise((resolve, reject) => {
+  resolve({
+    then:function(resolve,reject){
+      resolve("fulfilled status")
+    }
+  })
+}).then(res => {
+  console.log('res: ', res)
+})
+
+```
+
+## then方法
+
+### then方法接收的参数
+
+`then` 方法可以接受两个参数，用来处理成功的回调和失败的回调。
+
+```js
+const p = new Promise((resovle, reject) => {
+  // resovle()
+  // reject()
+})
+
+p.then(
+  res => {},
+  err => {}
+)
+```
+
+### then方法可以多次被调用
+
+一个 `Promise` 实例对象可以多次调用 `then` 方法，当我们的 `resolve` 方法被回调时, 所有的 `then` 方法传入的回调函数都会被调用：
+
+```js
+promise.then(res => {
+  console.log("res1:", res)
+})
+
+promise.then(res => {
+  console.log("res2:", res)
+})
+
+promise.then(res => {
+  console.log("res3:", res)
+})
+```
+
+### then方法的返回值
+
 
 #### all
 
