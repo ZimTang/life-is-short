@@ -8,7 +8,7 @@
     * [面向对象](frontend/JavaScript/oop.md)
     * [ES6](frontend/JavaScript/ES6.md)
     * [ES6+](frontend/JavaScript/ES6+.md)
-    * [Proxy与Reflect](frontend/JavaScript/Proxy-Reflect.md)
+    * [响应式原理](frontend/JavaScript/reactive.md)
     * [Promise](frontend/JavaScript/Promise.md)
     * [防抖](frontend/JavaScript/debounce.md)
     * [节流](frontend/JavaScript/throttle.md)
