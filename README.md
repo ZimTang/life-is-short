@@ -72,7 +72,7 @@
 [![My Blog](https://github-readme-stats.vercel.app/api/pin/?username=curriedSynSugar&repo=life-is-short)](https://github.com/curriedSynSugar/life-is-short)
 
 
-## Analysis :point_down:
+## 编程语言分析 :point_down:
 
 [![TopLangs](https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
