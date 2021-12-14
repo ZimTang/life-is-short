@@ -1,4 +1,4 @@
-* [前端](README.md)
+* [前端](frontend/README.md)
   * [JavaScript](frontend/JavaScript/)
     * [运行原理与作用域](frontend/JavaScript/scope.md)
     * [闭包](frontend/JavaScript/closure.md)
