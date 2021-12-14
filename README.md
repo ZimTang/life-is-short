@@ -6,20 +6,20 @@
 
 <p>
 
-[![Bilibili](https://img.shields.io/badge/dynamic/json?labelColor=FE7398&logo=bilibili&logoColor=white&label=bilibili%20fans&color=00aeec&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dbilibili%26queryKey%3D439734028)](https://space.bilibili.com/73748193)
-[![Zhihu](https://img.shields.io/badge/dynamic/json?color=142026&labelColor=0066ff&logo=zhihu&logoColor=white&label=zhihu%20fans&query=%24.data.totalSubs&url=https%3A%2F%2Fapi.spencerwoo.com%2Fsubstats%2F%3Fsource%3Dzhihu%26queryKey%3Dsyy11cn)](https://www.zhihu.com/people/streetworkoutsc)
-[![Github Stars](https://img.shields.io/github/stars/syy11cn?color=faf408&label=github%20stars&logo=github)](https://github.com/syy11cn)
+[![Bilibili](https://img.shields.io/badge/%E5%93%94%E5%93%A9%E5%93%94%E5%93%A9-bilibili-%23e861a4)](https://space.bilibili.com/73748193)
+[![Zhihu](https://img.shields.io/badge/%E7%9F%A5%E4%B9%8E-zhihu-blue)](https://www.zhihu.com/people/streetworkoutsc)
+[![Github](https://img.shields.io/badge/Github-stars-brightgreen)](https://github.com/curriedSynSugar?tab=repositories)
 
 </p>
 
 <p>
 
-[![Website](https://img.shields.io/badge/personal%20website-syy11.cn-b860ff?logo=html5&logoColor=white&labelColor=red)](https://syy11.cn)
-[![Wechat Subscription Account](https://img.shields.io/badge/subscription%20account-%E5%AD%99%E8%BD%B6%E6%89%AC-1e80ff?logo=wechat)](https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwNzQxNTgxNQ==&scene=124#wechat_redirect)
+<!-- [![Website](https://img.shields.io/badge/personal%20website-syy11.cn-b860ff?logo=html5&logoColor=white&labelColor=red)](https://syy11.cn)
+[![Wechat Subscription Account](https://img.shields.io/badge/subscription%20account-%E5%AD%99%E8%BD%B6%E6%89%AC-1e80ff?logo=wechat)](https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzIwNzQxNTgxNQ==&scene=124#wechat_redirect) -->
 
 </p>
 
-![Profile View Counter](https://komarev.com/ghpvc/?username=syy11cn)
+<!-- ![Profile View Counter](https://komarev.com/ghpvc/?username=syy11cn) -->
 
 ## 个人介绍 :raised_hands:
 
