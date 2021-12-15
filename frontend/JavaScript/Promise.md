@@ -145,12 +145,29 @@ new Promise((resolve, reject) => {
 }).then(res => {
   console.log('res: ', res)
 })
-
 ```
 
-## then方法
+> 使用 `Promise` 静态方法中的 `resolve` 传参的使用相同
 
-### then方法接收的参数
+## reject
+
+我们来说明一下 `reject` 中传入的不同参数的区别：
+
+对于 `reject` 来说，无论传入什么值，返回的结果都是失败的 `Promise` 对象
+
+```js
+const p = Promise.reject(new Promise(() => {}))
+
+p.then(res => {
+  console.log("res:", res)
+}).catch(err => {
+  console.log("err:", err) // err: Promise { <pending> }
+})
+```
+
+## then
+
+### then接收的参数
 
 `then` 方法可以接受两个参数，用来处理成功的回调和失败的回调。
 
@@ -164,9 +181,16 @@ p.then(
   res => {},
   err => {}
 )
+
+// 等价于
+p.then(res => {
+
+}).catch(err => {
+
+})
 ```
 
-### then方法可以多次被调用
+### then可以多次被调用
 
 一个 `Promise` 实例对象可以多次调用 `then` 方法，当我们的 `resolve` 方法被回调时, 所有的 `then` 方法传入的回调函数都会被调用：
 
@@ -184,12 +208,83 @@ promise.then(res => {
 })
 ```
 
-### then方法的返回值
+### then的返回值
 
+`then` 方法返回一个 `Promise` 对象，所以我们可以进行链式调用：
 
-#### all
+```js
+p.then(res => {
 
-接收一个包含promise的数组 只要有一个为rejected 返回的结果就为rejected
+}).then(res => {
+
+}).then(res => {
+
+}).catch(err => {
+  
+})
+```
+
+那么返回的 `Promise` 对象处于什么状态呢？有以下几种情况：
+
+1. 当返回值为 `fulfilled` 状态的 `Promise` 、`fulfilled` 状态的 `thenalbe` 、普通的值时，它会处于 `fulfilled` 状态。
+
+2. 当返回值为 `rejected` 状态的 `Prmoise` 、 `then` 方法抛出异常、`rejected` 状态的 `thenalbe`，它会处于 `rejected` 状态。
+
+## catch
+
+### catch可以多次被调用
+
+一个 `Promise` 实例对象的 `catch` 方法和 `then` 方法一样，也是可以多次调用的，每次调用我们都可以传入 `reject` 的回调函数，当 `Promise` 实例对象状态变为 `rejected` 的时候，这些函数都会被调用。
+
+```js
+promise.catch(err => {
+  console.log("err1:", err)
+})
+
+promise.catch(err => {
+  console.log("err2:", err)
+})
+
+promise.catch(err => {
+  console.log("err3:", err)
+})
+```
+
+### catch的返回值
+
+`catch` 方法和 `then` 方法同样，也会返回一个 `Promise` 对象，返回值的状态判断也和 `then` 方法一样。
+
+如果我们需要后续继续执行 `catch` 方法中的回调函数，就需要返回一个 `rejected` 状态的 `Promise` 对象。
+
+## finally
+
+`finally` 方法表示：无论 `Promise` 对象无论变成 `fulfilled` 还是 `rejected` 状态，最终都会被执行的代码。
+
+它不接收参数，只要之前的 `Promise` 对象处于非 `pending` 状态，那么它都会执行。
+
+```js
+const p = new Promise((resolve,reject) => {
+  resolve('fulfilled status')
+})
+
+p.then(res => {
+  return new Promise((resolve,reject) => {
+    reject('rejected status')
+  })
+},err => {
+
+}).then(res => {
+
+},err => {
+  console.log("err: ",err)
+}).finally(()=>{
+  console.log("finally")
+})
+```
+
+## all
+
+`all` 方法接收一个包含 `Promise` 的数组。只要有一个 `Promise`对象的结果为 `rejected` 状态，那么返回的结果就为 `rejected` 状态的 `Promise`，否则它返回的结果是 `fulfilled` 状态的 `Promise` 对象 。
 
 ```js
 let p1 = new Promise((resolve, reject) => {
@@ -201,9 +296,39 @@ const res = Promise.all([p1, p2, p3])
 console.log(res)
 ```
 
-#### race
+## allSettled
 
-接收一个包含promise的数组 返回一个新的promise 第一个完成的promise的结果状态就是最终的结果状态
+`allSettled` 方法接收一个包含 `Promise` 的数组，等待所有 `Promise` 对象的状态确定，再根据顺序返回这个包含 `Promise` 对象的数组。
+
+```js
+const p1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve(11111)
+  }, 1000);
+})
+
+const p2 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    reject(22222)
+  }, 2000);
+})
+
+const p3 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve(33333)
+  }, 3000);
+})
+
+Promise.allSettled([p1, p2, p3]).then(res => {
+  console.log(res)
+}).catch(err => {
+  console.log(err)
+})
+```
+
+## race
+
+`race` 方法接收一个包含 `Promise` 的数组，返回一个新的 `Promise` 对象。其中，第一个确定状态的 `Promise` 对象的结果状态就是最终的结果状态
 
 ```js
 let p1 = new Promise((resolve, reject) => {
@@ -216,49 +341,11 @@ const res = Promise.race([p1, p2, p3])
 console.log(res)
 ```
 
-## Promise关键问题
+## 改变状态与指定回调的顺序执行问题
 
-### 状态修改
-
-有三种方法能够修改promise实例对象的状态
-
-1. resolve函数
-2. reject函数
-3. 抛出错误
-
-```js
-let p = new Promise((resolve, reject) => {
-   // 1.resolve函数
-   // resolve("ok")
-   // 2.reject函数
-   // reject("error")
-   // 3.抛出错误
-   throw "error"
-})
-console.log(p)
-```
-
-### 能够执行多个回调
-
-当promise改变为对应状态时对应的回调函数都会调用
-
-```js
- let p = new Promise((resolve, reject) => {
-   resolve("ok")
- })
- p.then(value => {
-   console.log(value)
- })
- p.then(value => {
-   alert(value)
- })
-```
-
-### 改变状态与指定回调的顺序执行问题
-
-1. 当执行器里面的任务为同步任务时 先该变promise对应的状态 再指定回调
-2. 当执行器里面的任务为异步任务时 先指定回调 再改变状态
-3. 指定不是执行
+1. 当执行器里面的任务为同步任务时，先该变 `Promise` 对应的状态 再指定回调。
+2. 当执行器里面的任务为异步任务时，先指定回调 再改变状态。
+3. 指定不是执行。
 
 ```js
  let p = new Promise((resolve, reject) => {
@@ -273,34 +360,11 @@ console.log(p)
  })
 ```
 
-```then```是微任务 定时器是宏任务 所以宏任务执行完后先去执行```then```，也就是指定了```promise```改变状态时候的回调函数，然后再执行定时器，执行了```resolve("ok")```，触发```then```里面的回调
+`then` 是微任务，定时器是宏任务。所以宏任务执行完后先去执行 `then`，也就是指定了`promise`改变状态时候的回调函数，然后再执行定时器，执行了`resolve("ok")`，触发`then`里面的回调。
 
-### then方法返回由什么决定
+## Promise如何串联多个任务
 
-1. 抛出错误 返回的为rejected状态
-2. 返回结果是非promise类型的对象，返回的为fulfilled状态
-3. 返回结果是一个promise对象，返回的状态取决于promise对象的状态
-
-```js
- let p = new Promise((resolve, reject) => {
-   resolve("ok")
- })
-
- // then方法返回的是一个promise对象
- // result是一个promise对象
- let result = p.then(value => {
-   // throw "error"
-   // return 111;
-   return new Promise((resolve, reject) => {
-     resolve("ok")
-   })
- })
- console.log(result)
-```
-
-### Promise如何串联多个任务
-
-使用链式调用
+由于 `Promise` 中的 `then` 会返回 `Promise` 对象，因此使用链式调用将多个任务串联起来。
 
 ```js
  let p = new Promise((resolve, reject) => {
@@ -320,9 +384,9 @@ console.log(p)
  })
 ```
 
-### Promise中的异常传透
+## Promise中的异常传透
 
-当使用```promise```的```then```链式调用时，可以在最后指定失败的回调前面任何操作出了异常，都会传到最后失败的回调中处理
+当使用 `Promise` 的 `then` 链式调用时，可以在最后指定失败的回调前面任何操作出了异常，都会传到最后失败的回调中处理。
 
 ```js
  let p = new Promise((resolve, reject) => {
@@ -343,9 +407,9 @@ console.log(p)
  })
 ```
 
-### 如何中断promise链
+## 中断promise链
 
-有且只有一种方式，返回一个padding状态的promise
+有且只有一种方式，返回一个 `padding` 状态的 `Promise`
 
 ```js
  p.then(value => {
