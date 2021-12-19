@@ -27,8 +27,6 @@
 
 数字媒体技术专业 :man_technologist:
 
-热爱生活 :heart:
-
 希望加入开源社区做出自己的贡献 :eyes:
 
 ## 个人定位 :dart:
@@ -72,7 +70,7 @@
 [![My Blog](https://github-readme-stats.vercel.app/api/pin/?username=curriedSynSugar&repo=life-is-short)](https://github.com/curriedSynSugar/life-is-short)
 
 
-## 编程语言分析 :point_down:
+## 语言分析 :point_down:
 
 [![TopLangs](https://github-readme-stats.vercel.app/api/top-langs/?username=anuraghazra&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
