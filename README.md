@@ -2,7 +2,7 @@
 
 <img alt="Yiyang Sun" src="./img/avatar.jpeg" style="border-radius:5% ; width:30%; margin-bottom:40px" />
 
-# 你好，这是柯里的语法糖的博客 :wave:
+# 你好，这是 柯里的语法糖 的博客 :wave:
 
 <p>
 
