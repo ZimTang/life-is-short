@@ -1,4 +1,4 @@
-* [前端领域](frontend/README.md)
+* [前端领域](frontend/frontend.md)
   * [JavaScript](frontend/JavaScript/)
     * [运行原理与作用域](frontend/JavaScript/scope.md)
     * [闭包](frontend/JavaScript/closure.md)
@@ -16,3 +16,5 @@
     * [事件循环](frontend/JavaScript/eventLoop.md)
     * [类数组](frontend/JavaScript/arrayLike.md)
       <!-- * [计算机网络](frontend/network) -->
+* [个人成长](grow/grow.md)
+  * [重新为自己而活的2021](grow/2021.md)
