@@ -17,4 +17,4 @@
     * [类数组](frontend/JavaScript/arrayLike.md)
       <!-- * [计算机网络](frontend/network) -->
 * [个人成长](grow/grow.md)
-  * [重新为自己而活的2021](grow/2021.md)
+  * [【年终总结】重新为自己而活的2021](grow/2021.md)
