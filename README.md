@@ -1,6 +1,6 @@
 <div align=center>
 
-<img alt="Yiyang Sun" src="./img/avatar.jpeg" style="border-radius:5% ; width:30%; margin-bottom:40px" />
+<img alt="柯里的语法糖" src="./img/avatar.png" style="border-radius:5% ; width:25%; margin-bottom:40px" />
 
 # 你好，这是 柯里的语法糖 的博客 :wave:
 
